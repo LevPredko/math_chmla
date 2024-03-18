@@ -22,24 +22,6 @@ public class GaussianElimination {
                 .toArray();
     }
 
-    public static void main(String[] args) throws IOException {
-
-        double[][] A = readMatrix("matrix.txt");
-        double[] b = readVector("vector.txt");
-
-        GaussianResult result = gauss(A, b);
-
-        double[] x = result.x;
-        double det_A = result.detA;
-
-        double[] xRounded = Arrays.stream(x)
-                .map(d -> Math.round(d * 10) / 10.0)
-                .toArray();
-
-        System.out.println("Розв'язок системи рівнянь: " + Arrays.toString(xRounded));
-        System.out.println("Визначник матриці A: " + String.format("%.2f", det_A));
-    }
-
     public static GaussianResult gauss(double[][] a, double[] b) {
         int n = a.length;
         int[] p = new int[n];
@@ -94,13 +76,14 @@ public class GaussianElimination {
         int n = a.length;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                System.out.print(a[p[i]][j] + " ");
+                System.out.print(String.format("%.1f ", a[p[i]][j]));
             }
-            System.out.print("| " + b[p[i]]);
+            System.out.print("| " + String.format("%.1f", b[p[i]]));
             System.out.println();
         }
         System.out.println();
     }
+
 
     static class GaussianResult {
         double[] x;
@@ -110,5 +93,22 @@ public class GaussianElimination {
             this.x = x;
             this.detA = detA;
         }
+    }
+    public static void main(String[] args) throws IOException {
+
+        double[][] A = readMatrix("matrix.txt");
+        double[] b = readVector("vector.txt");
+
+        GaussianResult result = gauss(A, b);
+
+        double[] x = result.x;
+        double det_A = result.detA;
+
+        double[] xRounded = Arrays.stream(x)
+                .map(d -> Math.round(d * 10) / 10.0)
+                .toArray();
+
+        System.out.println("Розв'язок системи рівнянь: " + Arrays.toString(xRounded));
+        System.out.println("Визначник матриці A: " + String.format("%.2f", det_A));
     }
 }
