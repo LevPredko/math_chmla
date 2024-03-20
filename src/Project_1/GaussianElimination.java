@@ -24,91 +24,71 @@ public class GaussianElimination {
 
     public static GaussianResult gauss(double[][] a, double[] b) {
         int n = a.length;
-        int[] p = new int[n];
+        int[] p = new int[n]; // Масив для зберігання порядку рядків
         double det_A = 1.0;
+        int count = 0;
 
         for (int i = 0; i < n; i++) {
             p[i] = i;
         }
 
         for (int i = 0; i < n; i++) {
-            double max_a = 0.0;
-            int max_j = i;
-            for (int j = i; j < n; j++) {
-                if (Math.abs(a[p[j]][i]) > max_a) {
-                    max_a = Math.abs(a[p[j]][i]);
-                    max_j = j;
+            // Пошук максимального елемента в стовпці
+            double max_a = Math.abs(a[p[i]][i]);
+            int max_row = i;
+            for (int k = i + 1; k < n; k++) {
+                if (Math.abs(a[p[k]][i]) > max_a) {
+                    max_a = Math.abs(a[p[k]][i]);
+                    max_row = k;
                 }
             }
+
+            // Перестановка рядків
             int temp = p[i];
-            p[i] = p[max_j];
-            p[max_j] = temp;
+            p[i] = p[max_row];
+            p[max_row] = temp;
 
             det_A *= a[p[i]][i];
 
-            System.out.println("Після вибору головного елементу на кроці " + (i + 1) + ":");
-            printMatrix(a, b, p);
-
+            // Гаусівська елімінація
             for (int j = i + 1; j < n; j++) {
-                a[p[j]][i] /= a[p[i]][i];
-                for (int k = i + 1; k < n; k++) {
-                    a[p[j]][k] -= a[p[i]][k] * a[p[j]][i];
+                double m = a[p[j]][i] / a[p[i]][i]; //коефіцієнт, на який потрібно помножити поточний рядок
+                for (int k = i; k < n; k++) {
+                    a[p[j]][k] -= m * a[p[i]][k];
                 }
+                count++;
+                b[p[j]] -= m * b[p[i]];
             }
-
-            System.out.println("Після використання елементарних перетворень на кроці " + (i + 1) + ":");
-            printMatrix(a, b, p);
         }
 
+        // Зворотній хід
         double[] x = new double[n];
         for (int i = n - 1; i >= 0; i--) {
-            double s = 0;
-            for (int j = i; j < n; j++) {
-                s += a[p[i]][j] * x[j];
+            double sum = 0.0;
+            for (int j = i + 1; j < n; j++) {
+                sum += a[p[i]][j] * x[j];
             }
-            x[i] = (b[p[i]] - s) / a[p[i]][i];
+            x[i] = (b[p[i]] - sum) / a[p[i]][i];
         }
 
+        if(count % 2 == 0){
+            count = -1;
+        }else {
+            count = 1;
+        }
+        det_A *= count;
         return new GaussianResult(x, det_A);
     }
-
-    public static void printMatrix(double[][] a, double[] b, int[] p) {
-        int n = a.length;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                System.out.print(String.format("%.1f ", a[p[i]][j]));
-            }
-            System.out.print("| " + String.format("%.1f", b[p[i]]));
-            System.out.println();
-        }
-        System.out.println();
-    }
-
-
-    static class GaussianResult {
-        double[] x;
-        double detA;
-
-        GaussianResult(double[] x, double detA) {
-            this.x = x;
-            this.detA = detA;
-        }
-    }
-    public static void main(String[] args) throws IOException {
-
-        double[][] A = readMatrix("matrix.txt");
-        double[] b = readVector("vector.txt");
-
-        GaussianResult result = gauss(A, b);
-
-        double[] x = result.x;
-        double det_A = result.detA;
-
-        double[] xRounded = Arrays.stream(x)
-                .map(d -> Math.round(d * 10) / 10.0)
-                .toArray();
-
-        System.out.println("Розв'язок системи рівнянь: " + Arrays.toString(xRounded));
-        System.out.println("Визначник матриці A: " + String.format("%.2f", det_A));
-    }
+//
+//    public static void printMatrix(double[][] a, double[] b, int[] p) {
+//        int n = a.length;
+//        for (int i = 0; i < n; i++) {
+//            for (int j = 0; j < n; j++) {
+//                System.out.print(String.format("%.1f ", a[p[i]][j]));
+//            }
+//            System.out.print("| " + String.format("%.1f", b[p[i]]));
+//            System.out.println();
+//        }
+//        System.out.println();
+//    }
 }
