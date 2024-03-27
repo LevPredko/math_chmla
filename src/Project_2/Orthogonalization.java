@@ -67,8 +67,9 @@ public class Orthogonalization {
         double[] solution = new double[n];
         double[][] q = new double[n][n];
         double[][] r = new double[n][n];
-
+        // Основний цикл, який виконує ортогоналізацію Грама-Шмідта
         for (int j = 0; j < n; j++) {
+            // Обчислення елементів матриці R та оновлення коефіцієнтів
             for (int i = 0; i < j; i++) {
                 double dotProduct = 0;
                 for (int k = 0; k < n; k++) {
@@ -79,7 +80,7 @@ public class Orthogonalization {
                     coefficients[k][j] -= r[i][j] * q[k][i];
                 }
             }
-
+            // Обчислення довжини вектора та нормалізація, щоб отримати новий вектор q
             double length = 0;
             for (int i = 0; i < n; i++) {
                 length += coefficients[i][j] * coefficients[i][j];
@@ -91,7 +92,7 @@ public class Orthogonalization {
             }
             r[j][j] = length;
         }
-
+        // Обчислення проекції вектора b на кожен з векторів ортогонального базису
         double[] y = new double[n];
         for (int i = 0; i < n; i++) {
             double dotProduct = 0;
@@ -100,7 +101,7 @@ public class Orthogonalization {
             }
             y[i] = dotProduct;
         }
-
+        // Обернений хід методу Гауса для знаходження розв'язку
         for (int i = n - 1; i >= 0; i--) {
             double sum = 0;
             for (int j = i + 1; j < n; j++) {
